@@ -173,6 +173,17 @@ void Communicator::proceedModuleEvent(ModuleEvent & e)
 	}
 ```
 
+### Set a module idle or running
+
+Using the address `setIdle` a module can be activated or deactivated:
+
+```cpp
+ofJson j;
+j["value"] = false; // activate the module, for deactivate use true
+notifyEvent("setIdle", j);
+```
+
+
 ## Multithreading
 
 A module can run in a seperate thread. 
