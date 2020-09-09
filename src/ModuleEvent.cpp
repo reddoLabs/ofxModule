@@ -7,7 +7,7 @@ namespace ofxModule {
 		moduleClass = moduleClass_;
 		id = id_;
 		message = message_;
-		address = function_;
+		address = address_;
 		type = MODULE_EVENT_MESSAGE;
 
 		texture = nullptr;
