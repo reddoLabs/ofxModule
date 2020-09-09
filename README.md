@@ -72,7 +72,7 @@ A module is only able to receive messages from its inputs. In the example `Prese
 [
 	{
 		"type":"Camera",
-        "id":"theCamera",
+		"id":"theCamera",
 		"inputs":["Presenter"]
 	},
 	{
