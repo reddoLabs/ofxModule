@@ -41,7 +41,7 @@ protected:
 
 You can define parameters in `settings.json`, that will be available while running the module.
 
-```cpp
+```json
 // settings.json
 
 {
@@ -66,7 +66,7 @@ Communication between modules is set up in `modules.json`.
 You need to define a module with a `type` and optional an `id` and `inputs`. 
 A module is only able to receive messages from its inputs. In the example `Presenter` and `Camera` can communicate between each other, since the have them as inputs.
 
-```cpp
+```json
 // modules.json
 
 [
