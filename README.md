@@ -19,7 +19,7 @@ A module can be child of the following types
 
 A base Module could look like this
 
-'''
+```cpp
 namespace ofxModule {
 
 class Communicator : public ModuleRunnable{
@@ -35,13 +35,13 @@ protected:
     
     };
 }
-'''
+```
 
 ### Define parameters
 
 You can define parameters in `settings.json`, that will be available while running the module.
 
-'''
+```cpp
 // settings.json
 
 {
@@ -50,13 +50,13 @@ You can define parameters in `settings.json`, that will be available while runni
         "multiplicator": 1.3
     }
 }
-'''
+```
 
 The can be accessed during runtime by calling `settings`
 
-'''
+```cpp
 name = settings["name"].get<string>();
-'''
+```
 
 ## Set up communication
 
@@ -66,7 +66,7 @@ Communication between modules is set up in `modules.json`.
 You need to define a module with a `type` and optional an `id` and `inputs`. 
 A module is only able to receive messages from its inputs. In the example `Presenter` and `Camera` can communicate between each other, since the have them as inputs.
 
-'''
+```cpp
 // modules.json
 
 [
@@ -80,13 +80,13 @@ A module is only able to receive messages from its inputs. In the example `Prese
 		"inputs":["Camera"]
 	}
 ]
-'''
+```
 
 ### init modules
 
 Modules are created and their communication is initialized by the `ModuleControl`. 
 
-'''
+```cpp
 // ofApp.h
 
 #include "ofMain.h"
@@ -141,7 +141,7 @@ void ofApp::draw(){
 }
 
 
-'''
+```
 
 ### send and receive messages
 
@@ -149,7 +149,8 @@ Modules communicate through messages. This can be textual (json) and/or graphics
 To send a message use `notifyEvent()`. Every message needs an address that can be checked from the receiving module.
 
 #### Sending a message
-'''
+
+```cpp
 ofJson message;
 
 // define the value
@@ -158,11 +159,11 @@ response["value"] = 22;
 // spread the answer to all registered modules
 // the function name is aMessage
 notifyEvent("aMessage",response);
-'''
+```
 
 #### Receiving a message
 
-'''
+```cpp
 void Communicator::proceedModuleEvent(ModuleEvent & e)
 	{
 		// check the address type
@@ -170,7 +171,7 @@ void Communicator::proceedModuleEvent(ModuleEvent & e)
             ofLogNotice(e["value"].get<string>());
 		}
 	}
-'''
+```
 
 ## Multithreading
 
@@ -178,9 +179,9 @@ A module can run in a seperate thread.
 
 `ModuleRunnable(string moduleClass, string moduleName, bool isMultiThreaded = false, bool isStartThread = false, int fps = 60);`
 
-'''
+```cpp
 // Module that runs in seperate thread
 
 Communicator::Communicator(string moduleName):ModuleRunnable("Communicator", moduleName,true,true) {
 }
-'''
+```
