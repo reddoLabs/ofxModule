@@ -8,9 +8,18 @@ namespace ofxModule {
 
 	struct PostRequestSettings {
 		string url;
-		ofJson content;
 		string token = "";
 		float timeout = 3;
+		string user = "";
+		map<string, string> header;
+	};
+
+	struct PostRequestJsonSettings : PostRequestSettings{
+		ofJson content;
+	};
+
+	struct PostRequestFileSettings : PostRequestSettings {
+		string filename;
 	};
 
 	/// \brief as the name indicates, a class with static useful functions
@@ -28,13 +37,15 @@ namespace ofxModule {
 		static vector<string> listFiles(ofJson path);
 		static vector<string> listFolders(string path);
 
-		static ofHttpResponse sendPostRequest(string url, ofJson content, string token = "");
-		static ofHttpResponse sendPostRequest(PostRequestSettings s);
+		static ofHttpResponse sendPostRequestJson(string url, ofJson content, string token = "");
+		static ofHttpResponse sendPostRequestJson(PostRequestJsonSettings s);
+		static ofHttpResponse sendPostRequestFile(PostRequestFileSettings s);
 
 	protected:
 		static vector<string> listFiles(ofDirectory dir);
 
 	private:
+
 
 	};
 

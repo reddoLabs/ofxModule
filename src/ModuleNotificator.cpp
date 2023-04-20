@@ -11,66 +11,66 @@ namespace ofxModule {
 	{
 	}
 
-	void ModuleNotificator::notifyEvent(shared_ptr<ofFbo> fbo, string address, ofJson message) {
+	void ModuleNotificator::notifyEvent(shared_ptr<ofFbo> fbo, string address, ofJson message, string destClass) {
 		if (!isIdle) {
-			ModuleEvent e = ModuleEvent(moduleClass, moduleName, address, message);
+			ModuleEvent e = ModuleEvent(moduleClass, moduleName, address, message, destClass);
 			e.fbo = fbo;
 			e.type = ModuleEvent::MODULE_EVENT_FBO;
 			ofNotifyEvent(moduleEvent, e);
 		}
 	}
 
-	void ModuleNotificator::notifyEvent(shared_ptr<ofTexture> texture, string address, ofJson message) {
+	void ModuleNotificator::notifyEvent(shared_ptr<ofTexture> texture, string address, ofJson message, string destClass) {
 		if (!isIdle) {
-			ModuleEvent e = ModuleEvent(moduleClass, moduleName, address, message);
+			ModuleEvent e = ModuleEvent(moduleClass, moduleName, address, message, destClass);
 			e.texture = texture;
 			e.type = ModuleEvent::MODULE_EVENT_TEXTURE;
 			ofNotifyEvent(moduleEvent, e);
 		}
 	}
 
-	void ModuleNotificator::notifyEvent(shared_ptr<ofImage> image, string address, ofJson message) {
+	void ModuleNotificator::notifyEvent(shared_ptr<ofImage> image, string address, ofJson message, string destClass) {
 		if (!isIdle) {
-			ModuleEvent e = ModuleEvent(moduleClass, moduleName, address, message);
+			ModuleEvent e = ModuleEvent(moduleClass, moduleName, address, message, destClass);
 			e.image = image;
 			e.type = ModuleEvent::MODULE_EVENT_IMAGE;
 			ofNotifyEvent(moduleEvent, e);
 		}
 	}
 
-	void ModuleNotificator::notifyEvent(shared_ptr<ofPixels> pixels, string address, ofJson message) {
+	void ModuleNotificator::notifyEvent(shared_ptr<ofPixels> pixels, string address, ofJson message, string destClass) {
 		if (!isIdle) {
-			ModuleEvent e = ModuleEvent(moduleClass, moduleName, address, message);
+			ModuleEvent e = ModuleEvent(moduleClass, moduleName, address, message, destClass);
 			e.pixels = pixels;
 			e.type = ModuleEvent::MODULE_EVENT_PIXELS;
 			ofNotifyEvent(moduleEvent, e);
 		}
 	}
 
-	void ModuleNotificator::notifyEvent(vector<shared_ptr<ofTexture>> textures, string address, ofJson message)
+	void ModuleNotificator::notifyEvent(vector<shared_ptr<ofTexture>> textures, string address, ofJson message, string destClass)
 	{
 		if (!isIdle) {
-			ModuleEvent e = ModuleEvent(moduleClass, moduleName, address, message);
+			ModuleEvent e = ModuleEvent(moduleClass, moduleName, address, message, destClass);
 			e.textures = textures;
 			e.type = ModuleEvent::MODULE_EVENT_MULTIPLE_TEXTURE;
 			ofNotifyEvent(moduleEvent, e);
 		}
 	}
 
-	void ModuleNotificator::notifyEvent(vector<shared_ptr<ofImage>> images, string address, ofJson message)
+	void ModuleNotificator::notifyEvent(vector<shared_ptr<ofImage>> images, string address, ofJson message, string destClass)
 	{
 		if (!isIdle) {
-			ModuleEvent e = ModuleEvent(moduleClass, moduleName, address, message);
+			ModuleEvent e = ModuleEvent(moduleClass, moduleName, address, message, destClass);
 			e.images = images;
 			e.type = ModuleEvent::MODULE_EVENT_MULTIPLE_IMAGE;
 			ofNotifyEvent(moduleEvent, e);
 		}
 	}
 
-	void ModuleNotificator::notifyEvent(vector<shared_ptr<ofFbo>> fbos, string address, ofJson message)
+	void ModuleNotificator::notifyEvent(vector<shared_ptr<ofFbo>> fbos, string address, ofJson message, string destClass)
 	{
 		if (!isIdle) {
-			ModuleEvent e = ModuleEvent(moduleClass, moduleName, address, message);
+			ModuleEvent e = ModuleEvent(moduleClass, moduleName, address, message,destClass);
 			e.fbos = fbos;
 			e.type = ModuleEvent::MODULE_EVENT_MULTIPLE_FBO;
 			ofNotifyEvent(moduleEvent, e);
@@ -94,9 +94,9 @@ namespace ofxModule {
 		}
 	}
 
-	void ModuleNotificator::notifyEvent(string address, ofJson message) {
+	void ModuleNotificator::notifyEvent(string address, ofJson message, string destClass) {
 		if (!isIdle) {
-			ModuleEvent e = ModuleEvent(moduleClass, moduleName, address, message);
+			ModuleEvent e = ModuleEvent(moduleClass, moduleName, address, message,destClass);
 			ofNotifyEvent(moduleEvent, e);
 		}
 	}

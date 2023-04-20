@@ -5,6 +5,7 @@ namespace ofxModule {
 	ModuleLoader::ModuleLoader(ModuleRunner* moduleRunner_) {
 		moduleRunner = moduleRunner_;
 		
+		// load modules
 		string configPath = "modules.json";
 		ofFile jsonFile("settingsPath.json");
 		if (jsonFile.exists()) {

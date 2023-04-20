@@ -72,6 +72,9 @@ namespace ofxModule {
 		/// \called when all modules loaded
 		virtual void onAllModulesLoaded() {};
 
+		/// \brief load envirenment variables using a specified settings path
+		virtual void loadEnvironmentVariables(string path);
+
 		friend std::ostream& operator<< (std::ostream &out, const ModuleRunnable& module);
 
 	protected:
@@ -86,6 +89,7 @@ namespace ofxModule {
 
 		/// \brief settings that can be defined in a json file
 		ofJson settings;
+		map<string, string> envVars;
 
 	private:
 		string settingsPath;

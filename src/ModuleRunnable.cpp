@@ -32,6 +32,9 @@ namespace ofxModule {
 		}
 
 		loadSettings();
+		loadEnvironmentVariables(".env");
+
+
 		isIdle = false;
 		isMultiThreaded = isMultiThreaded_;
 		if (isMultiThreaded && isStartThread) startThread();
@@ -144,6 +147,23 @@ namespace ofxModule {
 
 		*sPointer = settings;
 		ofSavePrettyJson(pathVar[0] + ".json", sSave);
+	}
+
+	void ModuleRunnable::loadEnvironmentVariables(string path)
+	{
+		ofBuffer buffer = ofBufferFromFile(path);
+
+		if (buffer.size()) {
+			for(auto& line:buffer.getLines()){
+				auto kvPair = ofSplitString(line, "=", false, true);
+				if (kvPair.size() == 2) {
+					envVars.insert(make_pair(kvPair.front(), kvPair.back()));
+				}
+				else {
+					ofLogError("ModuleRunnable::loadEnvironmentVariable", line + " is no valid env variable.");
+				}
+			}
+		}
 	}
 
 

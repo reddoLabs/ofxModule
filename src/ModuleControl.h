@@ -18,6 +18,7 @@ namespace ofxModule {
 		ModuleLoader*   getModuleLoader();
 		ModuleRunner*  getModuleRunner();
 
+
 	private:
 		ModuleLoader*   moduleLoader;
 		ModuleRunner*   moduleRunner;

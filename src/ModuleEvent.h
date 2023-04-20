@@ -22,7 +22,7 @@ namespace ofxModule {
 			MODULE_EVENT_MULTIPLE_TEXTURE
 		};
 
-		ModuleEvent(string moduleClass, string id, string address, ofJson message);
+		ModuleEvent(string moduleClass, string id, string address, ofJson message, string destClass = "");
 		~ModuleEvent();
 
 		string address = "";

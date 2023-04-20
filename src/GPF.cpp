@@ -10,6 +10,7 @@ namespace {
 
 namespace ofxModule {
 
+
 	string GPF::UnixToIsoTimeStamp(string parameter) {
 		char newTime[300];
 		int intTime = atoi(parameter.c_str());
@@ -173,66 +174,161 @@ namespace ofxModule {
 		return folderList;
 	}
 
-	ofHttpResponse GPF::sendPostRequest(string url, ofJson content, string token)
+	ofHttpResponse GPF::sendPostRequestJson(string url, ofJson content, string token)
 	{
-		PostRequestSettings s;
+		PostRequestJsonSettings s;
 		s.url = url;
 		s.content = content;
 		s.token = token;
-		return sendPostRequest(s);
+		return sendPostRequestJson(s);
 	}
 
-	ofHttpResponse GPF::sendPostRequest(PostRequestSettings s)
+	ofHttpResponse GPF::sendPostRequestJson(PostRequestJsonSettings s)
 	{
 		ofHttpResponse response;
 
 		CURLcode ret;
-		CURL *hnd;
-		struct curl_slist *slist1;
+		CURL *Curl;
+		struct curl_slist * headerlist;
 		std::string jsonstr = s.content.dump();
 
-		slist1 = NULL;
-		slist1 = curl_slist_append(slist1, "Content-Type: application/json");
+		headerlist = NULL;
+		headerlist = curl_slist_append(headerlist, "Content-Type: application/json");
 
-		s.token = "authorization: " + s.token;
-		std::vector<char> cstr(s.token.c_str(), s.token.c_str() + s.token.size() + 1);
-		slist1 = curl_slist_append(slist1, &cstr[0]);
+		if (s.token != "") {
+			ofLogNotice("token variable is deprecated. please use header[\"authorization\"]");
+			s.token = "authorization: " + s.token;
+			std::vector<char> cstr(s.token.c_str(), s.token.c_str() + s.token.size() + 1);
+			headerlist = curl_slist_append(headerlist, &cstr[0]);
+		}
 
-		hnd = curl_easy_init();
-		curl_easy_setopt(hnd, CURLOPT_URL, s.url.c_str());
-		curl_easy_setopt(hnd, CURLOPT_NOPROGRESS, 1L);
-		curl_easy_setopt(hnd, CURLOPT_POSTFIELDS, jsonstr.c_str());
-		curl_easy_setopt(hnd, CURLOPT_USERAGENT, "curl/7.38.0");
-		curl_easy_setopt(hnd, CURLOPT_HTTPHEADER, slist1);
-		curl_easy_setopt(hnd, CURLOPT_MAXREDIRS, 50L);
-		curl_easy_setopt(hnd, CURLOPT_CUSTOMREQUEST, "POST");
-		curl_easy_setopt(hnd, CURLOPT_TCP_KEEPALIVE, 1L);
+		for (auto& value : s.header) {
+			string headerCmd = value.first + ": " + value.second;
+			std::vector<char> cstr(headerCmd.c_str(), headerCmd.c_str() + headerCmd.size() + 1);
+			headerlist = curl_slist_append(headerlist, &cstr[0]);
+		}
+
+
+		Curl = curl_easy_init();
+		curl_easy_setopt(Curl, CURLOPT_URL, s.url.c_str());
+		curl_easy_setopt(Curl, CURLOPT_POSTFIELDS, jsonstr.c_str());
+		curl_easy_setopt(Curl, CURLOPT_USERAGENT, "curl/7.38.0");
+		curl_easy_setopt(Curl, CURLOPT_HTTPHEADER, headerlist);
+		curl_easy_setopt(Curl, CURLOPT_MAXREDIRS, 50L);
+		curl_easy_setopt(Curl, CURLOPT_HTTP_VERSION, (long)CURL_HTTP_VERSION_2TLS);
+		curl_easy_setopt(Curl, CURLOPT_CUSTOMREQUEST, "POST");
+		curl_easy_setopt(Curl, CURLOPT_TCP_KEEPALIVE, 1L);
+		
+		if (s.user != "") {
+			curl_easy_setopt(Curl, CURLOPT_USERPWD, s.user.c_str());
+
+		}
 
 		//response
-		curl_easy_setopt(hnd, CURLOPT_TIMEOUT, s.timeout);
-		curl_easy_setopt(hnd, CURLOPT_WRITEDATA, &response);
-		curl_easy_setopt(hnd, CURLOPT_WRITEFUNCTION, saveToMemory_cb);
-		curl_easy_setopt(hnd, CURLOPT_SSL_VERIFYPEER, FALSE);
+		curl_easy_setopt(Curl, CURLOPT_TIMEOUT, s.timeout);
+		curl_easy_setopt(Curl, CURLOPT_WRITEDATA, &response);
+		curl_easy_setopt(Curl, CURLOPT_WRITEFUNCTION, saveToMemory_cb);
+		curl_easy_setopt(Curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 
-		ret = curl_easy_perform(hnd);
+		ret = curl_easy_perform(Curl);
 
 
 		if (ret == CURLE_OK) {
 			long http_code = 0;
-			curl_easy_getinfo(hnd, CURLINFO_RESPONSE_CODE, &http_code);
+			curl_easy_getinfo(Curl, CURLINFO_RESPONSE_CODE, &http_code);
 			response.status = http_code;
+			//cout << response.data << endl;
 		}
 		else {
 			response.error = curl_easy_strerror(ret);
 			response.status = -1;
 		}
 
-		curl_easy_cleanup(hnd);
-		hnd = NULL;
-		curl_slist_free_all(slist1);
-		slist1 = NULL;
+		curl_easy_cleanup(Curl);
+		Curl = NULL;
+		curl_slist_free_all(headerlist);
+		headerlist = NULL;
 
 		return response;
+	}
+
+	ofHttpResponse GPF::sendPostRequestFile(PostRequestFileSettings s)
+	{
+		s.filename = ofToDataPath(s.filename, true);
+		ofHttpResponse response;
+
+		curl_global_init(CURL_GLOBAL_ALL);
+
+		CURL* Curl = curl_easy_init();
+
+		curl_easy_setopt(Curl, CURLOPT_FAILONERROR, 0);
+		curl_easy_setopt(Curl, CURLOPT_VERBOSE, 1L);
+
+		curl_httppost* formpost = NULL;
+		curl_httppost* lastptr = NULL;
+
+		curl_formadd(&formpost,
+			&lastptr,
+			CURLFORM_COPYNAME, "file",
+			CURLFORM_FILE, s.filename.c_str(),
+			CURLFORM_CONTENTTYPE, "image/jpeg",
+			CURLFORM_END);
+
+		struct curl_slist* headerlist = curl_slist_append(NULL, "Expect:");
+
+
+		if (s.token != "") {
+			ofLogNotice("token variable is deprecated. please use header[\"authorization\"]");
+			s.token = "authorization: " + s.token;
+			std::vector<char> cstr(s.token.c_str(), s.token.c_str() + s.token.size() + 1);
+			headerlist = curl_slist_append(headerlist, &cstr[0]);
+		}
+
+		for (auto& value : s.header) {
+			string headerCmd = value.first + ": " + value.second;
+			std::vector<char> cstr(headerCmd.c_str(), headerCmd.c_str() + headerCmd.size() + 1);
+			headerlist = curl_slist_append(headerlist, &cstr[0]);
+		}
+
+		if (s.user != "") {
+			curl_easy_setopt(Curl, CURLOPT_USERPWD, s.user.c_str());
+
+		}
+
+		string Url = s.url;
+		curl_easy_setopt(Curl, CURLOPT_URL, Url.c_str());
+
+		curl_easy_setopt(Curl, CURLOPT_HTTPHEADER, headerlist);
+		curl_easy_setopt(Curl, CURLOPT_HTTPPOST, formpost);
+
+		string Reponse;
+		curl_easy_setopt(Curl, CURLOPT_TIMEOUT, s.timeout);
+		curl_easy_setopt(Curl, CURLOPT_WRITEDATA, &response);
+		curl_easy_setopt(Curl, CURLOPT_WRITEFUNCTION, saveToMemory_cb);
+		curl_easy_setopt(Curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+
+		CURLcode ret = curl_easy_perform(Curl);
+
+		if (ret == CURLE_OK) {
+			long http_code = 0;
+			curl_easy_getinfo(Curl, CURLINFO_RESPONSE_CODE, &http_code);
+			response.status = http_code;
+			cout << response.data << endl;
+		}
+		else {
+			response.error = curl_easy_strerror(ret);
+			response.status = -1;
+		}
+
+		curl_easy_cleanup(Curl);
+		curl_formfree(formpost);
+		curl_slist_free_all(headerlist);
+
+		curl_global_cleanup();
+		Curl = NULL;
+		headerlist = NULL;
+		return response;
+		
 	}
 
 	vector<string> GPF::listFiles(ofDirectory dir)

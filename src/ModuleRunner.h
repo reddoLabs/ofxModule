@@ -28,6 +28,9 @@ namespace ofxModule {
 		/// \brief lists all modules
 		void listModules();
 
+		vector< ModuleRunnable*> getModules();
+		ModuleRunnable* getModule(string moduleId);
+
 	private:
 		vector< ModuleRunnable*> modules;
 		vector< ModuleDrawable*> modulesDrawable;

@@ -68,4 +68,20 @@ namespace ofxModule {
 
 	}
 
+	vector<ModuleRunnable*> ModuleRunner::getModules()
+	{
+		return modules;
+	}
+
+	ModuleRunnable * ModuleRunner::getModule(string moduleId)
+	{
+		for (auto& module:modules)
+		{
+			if (module->getModuleName() == moduleId) {
+				return module;
+			}
+		}
+		return nullptr;
+	}
+
 }

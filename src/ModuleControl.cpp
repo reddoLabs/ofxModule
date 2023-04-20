@@ -3,7 +3,7 @@
 namespace ofxModule {
 	//------------------------------------------------------------------
 	ModuleControl::ModuleControl() {
-
+		// init module runner and loader
 		moduleRunner = new ModuleRunner();
 		moduleLoader = new ModuleLoader(moduleRunner);
 	}
